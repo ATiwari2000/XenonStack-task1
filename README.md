@@ -1,6 +1,7 @@
-XenonStack-task1
-internsctl
-Overview
+**XenonStack-task1**
+
+**Overview**
+
 internsctl is a custom Linux command that provides functionalities for CPU information, memory information, user management, and file information with various options.
 
 **Installation**
