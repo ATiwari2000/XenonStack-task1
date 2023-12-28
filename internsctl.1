@@ -1,0 +1,78 @@
+.TH INTERNSCTL 1  "internsctl v0.1.0" "User Commands"
+
+.SH NAME
+internsctl \- Custom Linux Command
+
+.SH SYNOPSIS
+.B internsctl
+[\fICOMMAND\fP] [\fIOPTIONS\fP]
+
+.SH DESCRIPTION
+This command provides functionalities for CPU information, memory information, user management, and file information with various options.
+
+.SH COMMANDS
+.TP
+.B cpu
+Get CPU information.
+
+.TP
+.B memory
+Get memory information.
+
+.TP
+.B user
+User management.
+
+.TP
+.B file
+File information.
+
+.SH OPTIONS
+.TP
+.B --help
+Show help information.
+
+.TP
+.B --version
+Show command version.
+
+.SH EXAMPLES
+.PP
+.B internsctl cpu
+Get CPU information.
+
+.PP
+.B internsctl memory
+Get memory information.
+
+.PP
+.B internsctl user create john
+Create user 'john'.
+
+.PP
+.B internsctl user list
+List all users.
+
+.PP
+.B internsctl user list --sudo-only
+List users with sudo permissions.
+
+.PP
+.B internsctl file getinfo filename
+Get file information.
+
+.PP
+.B internsctl file getinfo --size filename
+Get file size.
+
+.PP
+.B internsctl file getinfo --permissions filename
+Get file permissions.
+
+.PP
+.B internsctl file getinfo --owner filename
+Get file owner.
+
+.PP
+.B internsctl file getinfo --last-modified filename
+Get file last modified.

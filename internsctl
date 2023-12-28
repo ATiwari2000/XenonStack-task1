@@ -1,0 +1,175 @@
+#!/bin/bash
+
+# Function to display CPU information
+get_cpu_info() {
+    lscpu
+}
+
+# Function to display memory information
+get_memory_info() {
+    free -h
+}
+
+# Function to create a new user
+create_user() {
+    if [ -z "$1" ]; then
+        echo "Error: Please provide a username."
+        return 1
+    fi
+
+    sudo useradd -m "$1"
+    echo "User '$1' created."
+}
+
+# Function to list all regular users
+list_regular_users() {
+    getent passwd | grep '/home' | cut -d: -f1
+}
+
+# Function to list users with sudo permissions
+list_sudo_users() {
+    grep -Po '^sudo.+:\K.*$' /etc/group | tr ',' '\n'
+}
+
+# Function to get file information
+get_file_info() {
+    option="$1"
+    file="$2"
+    # if file is not provided
+    if [ -z "$file" ]; then
+        file="$option"
+        option=""
+    fi
+    
+    if [ ! -e "$file" ]; then
+        echo "File '$file' does not exist."
+        return 1
+    fi
+
+
+
+    # if option is empty
+    if [ -z "$option" ]; then
+        filename=$(basename "$file")
+        echo "File: $filename"
+        echo "Access: $(stat -c %A "$file")"
+        echo "Size(B): $(stat -c %s "$file")"
+        echo "Owner: $(stat -c %U "$file")"
+        echo "Modify: $(stat -c %y "$file")"
+    else
+        case "$option" in
+            --size|-s)
+                echo "$(stat -c %s "$file")"
+                ;;
+            --permissions|-p)
+                echo "$(stat -c %A "$file")"
+                ;;
+            --owner|-o)
+                echo "$(stat -c %U "$file")"
+                ;;
+            --last-modified|-m)
+                echo "$(stat -c %y "$file")"
+                ;;
+            *)
+                echo "Error: Invalid option '$option'."
+                return 1
+                ;;
+        esac
+    fi
+}
+
+# Function to display manual page
+show_manual() {
+    echo "internsctl - Custom Linux Command"
+    echo "Usage: internsctl [COMMAND] [OPTIONS]"
+    echo "Commands:"
+    echo "    cpu           Get CPU information"
+    echo "    memory        Get memory information"
+    echo "    user          User management"
+    echo "    file          File information"
+    echo "Options:"
+    echo "    --help        Show help information"
+    echo "    --version     Show command version"
+    echo "For more information, visit the documentation."
+}
+
+# Function to display help
+show_help() {
+    echo "Usage: internsctl [COMMAND] [OPTIONS]"
+    echo "Commands:"
+    echo "    cpu           Get CPU information"
+    echo "    memory        Get memory information"
+    echo "    user          User management"
+    echo "    file          File information"
+    echo "Options:"
+    echo "    --help        Show help information"
+    echo "    --version     Show command version"
+    echo "Examples:"
+    echo "    internsctl cpu                   Get CPU information"
+    echo "    internsctl memory                Get memory information"
+    echo "    internsctl user create john      Create user 'john'"
+    echo "    internsctl user list             List all users"
+    echo "    internsctl user list --sudo-only List users with sudo permissions"
+    echo "    internsctl file getinfo filename Get file information"
+    echo "    internsctl file getinfo --size filename         Get file size"
+    echo "    internsctl file getinfo --permissions filename  Get file permissions"
+    echo "    internsctl file getinfo --owner filename        Get file owner"
+    echo "    internsctl file getinfo --last-modified filename  Get file last modified"
+}
+
+# Function to display version
+show_version() {
+    echo "internsctl v0.1.0"
+}
+
+# Main function to handle command arguments
+main() {
+    case "$1" in
+        cpu)
+            get_cpu_info
+            ;;
+        memory)
+            get_memory_info
+            ;;
+        user)
+            case "$2" in
+                create)
+                    create_user "$3"
+                    ;;
+                list)
+                    if [ "$3" == "--sudo-only" ]; then
+                        list_sudo_users
+                    else
+                        list_regular_users
+                    fi
+                    ;;
+                *)
+                    show_manual
+                    ;;
+            esac
+            ;;
+        file)
+            case "$2" in
+                getinfo)
+                    shift 2
+                    get_file_info "$@"
+                    ;;
+                *)
+                    show_manual
+                    ;;
+            esac
+            ;;
+        --help)
+            show_help
+            ;;
+        --version)
+            show_version
+            ;;
+        *)
+            show_manual
+            ;;
+    esac
+}
+
+# Execute main function with provided arguments
+main "$@"
